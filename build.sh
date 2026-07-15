@@ -193,8 +193,8 @@ if [ ! -d "deps/moltenvk" ]; then
   echo "Missing MoltenVK for macOS/iOS, downloading it."
   mkdir -p deps/moltenvk
   pushd deps/moltenvk
-  curl -LO https://github.com/godotengine/moltenvk-osxcross/releases/download/moltenvk-1.4.1/MoltenVK-all.tar.xz
-  tar xvf MoltenVK-all.tar.xz && rm -f MoltenVK-all.tar.xz
+  curl -LO https://github.com/KhronosGroup/MoltenVK/releases/download/v1.4.1/MoltenVK-all.tar
+  tar xvf MoltenVK-all.tar && rm -f MoltenVK-all.tar
   mv MoltenVK/MoltenVK/include/ MoltenVK/
   mv MoltenVK/MoltenVK/static/MoltenVK.xcframework/ MoltenVK/
   popd
@@ -314,16 +314,20 @@ mkdir -p ${basedir}/out/web
 ${podman_run} -v ${basedir}/build-web:/root/build -v ${basedir}/out/web:/root/out localhost/godot-web:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/web
 
 mkdir -p ${basedir}/out/macos
-${podman_run} -v ${basedir}/build-macos:/root/build -v ${basedir}/out/macos:/root/out -v ${basedir}/deps/accesskit:/root/accesskit -v ${basedir}/deps/moltenvk:/root/moltenvk -v ${basedir}/deps/angle:/root/angle --env STEAM=${build_steam} localhost/godot-osx:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/macos
+${podman_run} -v ${basedir}/build-macos:/root/build -v ${basedir}/out/macos:/root/out -v ${basedir}/deps/accesskit:/root/accesskit -v ${basedir}/deps/moltenvk:/root/moltenvk -v ${basedir}/deps/angle:/root/angle --env STEAM=${build_steam} localhost/godot-apple:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/macos
 
 mkdir -p ${basedir}/out/android
 ${podman_run} -v ${basedir}/build-android:/root/build -v ${basedir}/out/android:/root/out -v ${basedir}/deps/swappy:/root/swappy -v ${basedir}/deps/perfetto:/root/perfetto -v ${basedir}/deps/keystore:/root/keystore localhost/godot-android:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/android
 
 mkdir -p ${basedir}/out/ios
-${podman_run} -v ${basedir}/build-ios:/root/build -v ${basedir}/out/ios:/root/out localhost/godot-appleembedded:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/ios
+${podman_run} -v ${basedir}/build-ios:/root/build -v ${basedir}/out/ios:/root/out localhost/godot-apple:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/ios
 
-#mkdir -p ${basedir}/out/visionos
-#${podman_run} -v ${basedir}/build-visionos:/root/build -v ${basedir}/out/visionos:/root/out localhost/godot-appleembedded:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/visionos
+# TODO(sgc): Enable when tvOS is available.
+# mkdir -p ${basedir}/out/tvos
+# ${podman_run} -v ${basedir}/build-tvos:/root/build -v ${basedir}/out/tvos:/root/out localhost/godot-apple:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/tvos
+
+mkdir -p ${basedir}/out/visionos
+${podman_run} -v ${basedir}/build-visionos:/root/build -v ${basedir}/out/visionos:/root/out localhost/godot-apple:${img_version} bash build/build.sh 2>&1 | tee ${basedir}/out/logs/visionos
 
 uid=$(id -un)
 gid=$(id -gn)
